@@ -9,7 +9,9 @@ static bool isFinish = false;
 Your multithread class body here...
 */
 void someTask() {
-    //this is use for timing purpose
+    /*
+    For timing purpose
+    */
     using namespace std::literals::chrono_literals;
 
     //this can call the thread id for own use
