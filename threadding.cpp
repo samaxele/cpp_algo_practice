@@ -3,65 +3,101 @@
 //#include <chrono>
 
 // lets set a flag condition
-static bool isFinish = false;
-
+static bool task1_Finish = false;
+static bool task2_Finish = false;
+static unsigned int input;
 /*
 Your multithread class body here...
 */
-void someTask() {
+void Task_1() {
     /*
     For timing purpose
     */
     using namespace std::literals::chrono_literals;
 
     //this can call the thread id for own use
-    std::cout << "Thread running, thread id: " << std::this_thread::get_id()
-    << ", this is task\n";
+    std::cout << "Task 1 ID: " << std::this_thread::get_id()
+    << "\n";
 
     //assume this is thread_1, main thread = thread_0
     // do some random work 
-    while (!isFinish) {
+    while (!task1_Finish) {
         //do this task forever
-        std::cout << "Working...\n" ;
+        std::cout << "Task 1: Working\n" ;
 
         //sleep this thread for 1s
         std::this_thread::sleep_for(1s);
     }
-    std::cout << "Finish is called!\n";
+    std::cout << "Exit: Task 1 is done!\n";
 }
 
+void Task_2() {
+    /*
+    For input checking, this will active until Task1 is complete
+    */
+    using namespace std::literals::chrono_literals;
+
+    //this can call the thread id for own use
+    std::cout << "Task 2 ID: " << std::this_thread::get_id()
+    << "\n";
+
+    while (!task2_Finish) {
+        //do this task forever
+        //Task2 will pause here:
+        std::cin >> input;
+        if (2 == input) {
+            /*
+            Enter '2' will stop Task 1.
+            */
+            task1_Finish = true;
+            task2_Finish = true;
+            break;
+        }
+        else {
+            std::cout << "Invalid input, enter '2' to end..\n";
+            input =0;
+        }
+        /*
+        Delay added to debounce input from user
+        */
+        std::this_thread::sleep_for(0.3s);
+    }   
+}
+ 
 int main() {
-    std::cout << "Thread running, thread id: " << std::this_thread::get_id()
-    << ", this is the main\n";
+    
+    std::cout << "Main thread, thread id: " << std::this_thread::get_id()
+    << "\n";
     /*
-    Create a std::thread object with function task that we want to perform
+    Create an object with type <std::thread> object with task that we want that thread to perform
+    Assume: Worker = thread, workload = task;
     this is a function pointer in arg
-    When std::thread was called, the thread task will be started and the
-    main thread needs to wait task to end
+    When std::thread was called, the thread task will run
     */
-    std::thread myThread(someTask);
+    std::thread worker1(Task_1);
+    std::thread worker2(Task_2);
 
     /*
-    get() will block the code (main thread or thread 0) until we tap Enter
-    Since we called thread_1 previously, thread_1 will continue work while
-    thread_0 proceed to next step get(). 
-
-    When enter is pressed, isFInish will be set to true to end the
-    while() running in thread_1 
+    We call join() function to wait for both worker1 and worker2 to join after
+    their executions are completed.
     */
-    std::cin.get();
-    std::cout << "Enter pressed! program ending!\n";
-    isFinish = true;
+    worker1.join();
+    worker2.join();
+    /*
+    Both worker1 and worker2 will be working in parallel for now...
+    We will need to do something so that both will react without interfering
+    each other.
+    */
 
+    
     /*
     join() will be called to wait thread_1 to complete.
     in more modern programming lang this is similar to wait()
     This also make sure we dont proceed before getting response from
     thread_1 completion
     */
-    myThread.join();
+
     std::cout << "Program ended, press enter to exit";
-    // exit the code with enter
-    std::cin.get();
+    
     return 0;
 }
