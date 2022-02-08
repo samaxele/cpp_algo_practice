@@ -94,5 +94,12 @@ void printList (std::vector<int> &vec) {
         std::cout << *it << " > ";
         it++;
     }
-    std::cout << "null" << std::endl;
+    std::cout << "null\n";
 } 
+
+void printList (std::vector<unsigned int> &vec) {
+    for (auto x : vec) {
+        std::cout << x << " > ";
+    }
+    std::cout << "\b\b  \n";
+}
