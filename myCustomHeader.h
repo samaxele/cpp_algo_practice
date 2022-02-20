@@ -76,6 +76,18 @@ ListNode *genListNode(std::vector<int> x) {
     return head->next;
 }
 
+ListNode *genListNode(std::string str) {
+    auto it = str.begin();
+    ListNode *tail = new ListNode(0);
+    ListNode *ans = tail;
+    while (it != str.end()) {
+        tail->next = new ListNode(*it);
+        tail = tail->next;
+        it++;
+    }
+    return ans->next;
+}
+
 void printList (ListNode *l1) {
     while(l1) {
         std::cout << l1->val << " > ";
